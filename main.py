@@ -21,10 +21,10 @@ def run_random_forest(df, target_col, dataset_name):
 
     y_pred = model.predict(X_test)
 
-    print("\n📊 Classification Report:")
+    print("\n Classification Report:")
     print(classification_report(y_test, y_pred, zero_division=0))
 
-    print("\n📉 Confusion Matrix:")
+    print("\n Confusion Matrix:")
     print(confusion_matrix(y_test, y_pred))
 
     return {
@@ -46,10 +46,10 @@ def run_isolation_forest(df, dataset_name):
     anomaly_count = preds.sum()
     total = len(preds)
 
-    print("\n📊 Anomaly Summary:")
+    print("\n Anomaly Summary:")
     print(preds.value_counts())
 
-    print(f"\n🔍 Anomaly Percentage: {(anomaly_count / total) * 100:.2f}%")
+    print(f"\nAnomaly Percentage: {(anomaly_count / total) * 100:.2f}%")
 
     return {
         "model": "Isolation Forest",
