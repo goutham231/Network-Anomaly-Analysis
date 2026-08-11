@@ -8,7 +8,7 @@ def run_random_forest(df, target_col, dataset_name):
     print(f"\n===== Random Forest on {dataset_name} =====")
 
     if target_col not in df.columns:
-        print("❌ Random Forest skipped (no label column found)")
+        print("Random Forest skipped (no label column found)")
         return None
 
     X = df.drop(target_col, axis=1)
