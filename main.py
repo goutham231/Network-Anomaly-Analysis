@@ -1,28 +1,5 @@
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier, IsolationForest
-from sklearn.metrics import classification_report, confusion_matrix
 
-# ---------- RANDOM FOREST ----------
-def run_random_forest(df, target_col, dataset_name):
-    print(f"\n===== Random Forest on {dataset_name} =====")
-
-    if target_col not in df.columns:
-        print("Random Forest skipped (no label column found)")
-        return None
-
-    X = df.drop(target_col, axis=1)
-    y = df[target_col]
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-    model = RandomForestClassifier(class_weight='balanced')
-    model.fit(X_train, y_train)
-
-    y_pred = model.predict(X_test)
-
-    print("\n Classification Report:")
-    print(classification_report(y_test, y_pred, zero_division=0))import pandas as pd
+ import pandas as pd
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier, IsolationForest
@@ -82,7 +59,6 @@ def summarise_dataset(data, name, target_column=None):
         )
         print(percentages)
 
-    # Check for constant features
     numeric_features = data.select_dtypes(include=["number"])
 
     constant_columns = [
@@ -101,11 +77,6 @@ def summarise_dataset(data, name, target_column=None):
 # ============================================================
 
 def prepare_features(data, target_column):
-    """
-    Removes the target, keeps numeric features, removes
-    constant columns, fills missing values and returns
-    prepared features and target.
-    """
 
     labels = data[target_column].copy()
 
@@ -247,14 +218,11 @@ def run_isolation_forest(data, target_column, dataset_name):
         print("Isolation Forest skipped: target column not found.")
         return None
 
-    # Keep the real labels separately.
-    # They are NOT given to the model.
     actual_labels = data[target_column].copy()
 
     features = data.drop(columns=[target_column])
     features = features.select_dtypes(include=["number"]).copy()
 
-    # Remove constant features
     constant_columns = [
         column
         for column in features.columns
@@ -266,11 +234,9 @@ def run_isolation_forest(data, target_column, dataset_name):
         print(constant_columns)
         features = features.drop(columns=constant_columns)
 
-    # Fill missing values
     imputer = SimpleImputer(strategy="median")
     features_imputed = imputer.fit_transform(features)
 
-    # Scale features because their ranges are different
     scaler = StandardScaler()
     scaled_features = scaler.fit_transform(features_imputed)
 
@@ -283,9 +249,6 @@ def run_isolation_forest(data, target_column, dataset_name):
 
     raw_predictions = iso_model.fit_predict(scaled_features)
 
-    # Isolation Forest:
-    #  1  = normal
-    # -1  = anomaly
     predicted_anomalies = pd.Series(
         raw_predictions,
         index=data.index
@@ -368,7 +331,6 @@ def run_isolation_forest(data, target_column, dataset_name):
         .round(2)
     )
 
-    # Actual anomaly averages
     actual_anomalies = original_numeric[
         actual_labels == 1
     ]
